@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biology, Virus merenan</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@500;700&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b13;--pn:#0e1523;--ln:#223049;--ink:#e8eef7;--mu:#8da0bd;--cy:#5cc8ff;--ro:#ff5d7a;--am:#ffb454;--gr:#6fcf97;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#eef3f9;--pn:#fff;--ln:#cdd9e8;--ink:#142033;--mu:#52647f;--cy:#0a74b8;--ro:#d6304f;--am:#b86e00;--gr:#1f8a52}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:Newsreader,Georgia,serif;margin:0}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;padding:10px 18px;border-bottom:1px solid var(--ln)}
+header h1{font-size:1.35rem}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button,.chip,.opt,.go{font:inherit;color:var(--ink);background:none;border:1px solid var(--ln);border-radius:8px;padding:6px 14px;cursor:pointer}
+nav button[aria-selected=true],.chip[aria-pressed=true]{background:var(--cy);border-color:var(--cy);color:#04121c;font-weight:600}
+button:focus-visible,input:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+main{flex:1;min-height:0;display:flex}
+.view{flex:1;min-width:0;display:flex}
+.view[hidden]{display:none}
+#stage{flex:1;position:relative;min-height:320px;background:radial-gradient(circle at 50% 45%,#16304f,#070b13 70%)}
+#stage canvas{display:block;width:100%;height:100%}
+#hint{position:absolute;left:14px;bottom:12px;font-size:.8rem;color:var(--mu)}
+aside,.pad{width:390px;max-width:100%;overflow:auto;padding:18px;border-left:1px solid var(--ln);background:var(--pn)}
+.pad{width:auto;flex:1;border:0;background:none;max-width:1000px;margin:0 auto}
+aside h2{font-size:1.7rem}
+.sub{color:var(--mu);margin:2px 0 12px;font-style:italic}
+dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:12px 0;font-size:.9rem}
+dt{color:var(--mu)}dd{margin:0}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+label{display:block;font-size:.9rem;margin:8px 0}
+input[type=range]{width:100%;accent-color:var(--cy)}
+#pinfo,.box{border-left:3px solid var(--ro);background:rgba(255,93,122,.08);padding:10px 14px;border-radius:0 8px 8px 0;margin-top:10px}
+.box.c{border-color:var(--cy);background:rgba(92,200,255,.08)}
+#cwrap{flex:1;display:flex;flex-direction:column;min-width:0}
+#cv{flex:1;width:100%;min-height:280px;display:block;background:radial-gradient(circle at 50% 50%,#13263f,#070b13 75%)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:14px 0}
+.card{text-align:left;border:1px solid var(--ln);border-radius:10px;padding:12px;background:var(--pn);color:var(--ink);font:inherit;cursor:pointer}
+.card[aria-expanded=true]{border-color:var(--cy)}
+.card b{font-family:Newsreader,serif;font-size:1.15rem;display:block}
+.card small{color:var(--mu)}
+.card p{margin:8px 0 0;font-size:.88rem}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.opt.ok{border-color:var(--gr);background:rgba(111,207,151,.15)}
+.opt.no{border-color:var(--ro);background:rgba(255,93,122,.15)}
+.go{background:var(--cy);color:#04121c;border-color:var(--cy);font-weight:600;margin-top:10px}
+#bar{height:6px;background:var(--ln);border-radius:3px;overflow:hidden;margin:10px 0}
+#bar i{display:block;height:100%;background:var(--cy);width:0;transition:width .3s}
+#pop{position:absolute;width:300px;max-width:calc(100% - 20px);background:var(--pn);border:1px solid var(--cy);border-radius:10px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.5);font-size:.9rem;z-index:5}#pop[hidden]{display:none}#pop h3{font-size:1.2rem;padding-right:22px}#pop small{color:var(--mu)}#pop p{margin:6px 0 0}#pop .cl{color:var(--am)}#px{position:absolute;top:4px;right:8px;background:none;border:0;color:var(--mu);font-size:1.4rem;cursor:pointer}
+@media(max-width:820px){main{overflow:auto}.view{flex-direction:column}#stage{flex:none;height:55vh}aside{width:100%;border:0;border-top:1px solid var(--ln);overflow:visible}#cwrap{min-height:90vh}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+<header>
+<h1>Proyek V2 Up</h1>
+<nav role="tablist" aria-label="Modul">
+<button role="tab" data-v="atlas" aria-selected="true">Model 3D</button>
+<button role="tab" data-v="cycle" aria-selected="false">Siklus infeksi</button>
+<button role="tab" data-v="klas" aria-selected="false">Klasifikasi &amp; klinis</button>
+<button role="tab" data-v="quiz" aria-selected="false">Kuis</button>
+</nav>
+</header>
+<main>
+<section id="atlas" class="view">
+<div id="stage"><div id="pop" role="dialog" aria-live="polite" hidden><button id="px" aria-label="Tutup">×</button><h3 id="pt"></h3><small id="pv"></small><p id="pd"></p><p id="pc" class="cl"></p></div><div id="hint">Seret untuk memutar · gulir untuk zoom · klik komponen untuk detail</div></div>
+<aside>
+<div class="row" id="chips" role="group" aria-label="Pilih virus"></div>
+<h2 id="vn"></h2><p class="sub" id="vf"></p>
+<dl id="facts"></dl><p id="vd"></p>
+<label>Transparansi lapisan luar<input type="range" id="op" min=".1" max="1" step=".05" value=".45"></label>
+<label><input type="checkbox" id="rot"> Putar otomatis</label>
+<h3>Komponen</h3><div class="row" id="parts"></div>
+<div id="pinfo"><b>Pilih komponen</b><br>Klik bagian pada model atau tombol di atas.</div>
+</aside>
+</section>
+
+<section id="cycle" class="view" hidden>
+<div id="cwrap"><canvas id="cv" aria-label="Animasi siklus infeksi"></canvas></div>
+<aside>
+<h2>Siklus infeksi</h2>
+<div class="row" id="cchips" role="group" aria-label="Pilih siklus"></div>
+<div class="row" id="steps"></div>
+<div class="box c" id="sinfo"></div>
+<div class="row"><button class="chip" id="prev">Sebelumnya</button><button class="chip" id="next">Berikutnya</button><label>Kecepatan animasi<input type="range" id="spd" min=".3" max="2" step=".1" value="1"></label><button class="chip" id="rep">Ulangi tahap</button><button class="chip" id="play" aria-pressed="false">Putar otomatis</button></div>
+<p class="sub" id="cnote"></p>
+</aside>
+</section>
+
+<section id="klas" class="view" hidden><div class="pad">
+<h2>Klasifikasi Baltimore</h2>
+<p>Virus dikelompokkan menurut jenis genom dan cara membuat mRNA. Klik kartu untuk melihat strategi replikasi.</p>
+<div class="cards" id="balt"></div>
+<h2>Pencegahan dan terapi</h2>
+<div class="cards" id="clin"></div>
+<h2>Tonggak sejarah</h2>
+<div id="hist"></div>
+</div></section>
+
+<section id="quiz" class="view" hidden><div class="pad">
+<h2>Uji pemahaman</h2><div id="bar"><i></i></div><div id="qbox"></div>
+</div></section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+$$('nav button').forEach(b=>b.onclick=()=>{$$('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.hidden=v.id!==b.dataset.v);resize()});
+
+/* ---------- Data model 3D ---------- */
+const V={
+cov:{n:'SARS-CoV-2',f:'Coronaviridae · virus bersampul',g:'ssRNA(+) ±30 kb',s:'80–120 nm',y:'Nukleokapsid heliks, bersampul',x:'COVID-19',cam:9,ty:0,
+d:'Virus bersampul dengan genom RNA terbesar di antara virus RNA. Spike mengikat reseptor ACE2 pada sel epitel saluran napas. Karena sampul lipidnya rapuh, sabun dan alkohol efektif menginaktivasinya.',
+p:{env:['Sampul lipid','Membran ganda yang diambil dari membran sel inang (ERGIC) saat perakitan. Sensitif terhadap sabun, alkohol, dan panas.'],
+spike:['Glikoprotein spike (S)','Trimer yang mengikat ACE2 melalui domain RBD. Target utama antibodi penetral dan vaksin mRNA.','Mutasi pada domain RBD dapat menurunkan efektivitas antibodi.'],
+m:['Protein M dan E','Protein membran (M) dan selubung (E) membentuk bentuk virion dan memandu perakitan.'],
+n:['Protein nukleokapsid (N)','Membungkus RNA seperti manik pada benang dan melindunginya. Sering menjadi target tes antigen.','Dasar tes antigen cepat (rapid test).'],
+rna:['Genom RNA(+)','Berfungsi langsung sebagai mRNA. Ribosom sel menerjemahkannya menjadi poliprotein yang dipotong protease virus.']}},
+phg:{n:'Bakteriofag T4',f:'Myoviridae · virus kompleks',g:'dsDNA ±169 kb',s:'Kepala ±90 nm',y:'Kepala ikosahedral + ekor kontraktil',x:'Menginfeksi E. coli (terapi fag)',cam:13,ty:.8,
+d:'Mesin penyuntik DNA yang rumit. Fag kini diteliti kembali sebagai alternatif untuk infeksi bakteri yang resisten antibiotik.',
+p:{head:['Kapsid kepala','Cangkang protein yang menyimpan DNA dengan tekanan sangat tinggi.'],
+dna:['DNA genom','DNA untai ganda yang terkemas rapat; disuntikkan ke sitoplasma bakteri.'],
+sheath:['Selubung ekor kontraktil','Memendek saat berkontraksi sehingga mendorong tabung dalam menembus dinding sel.'],
+base:['Pelat dasar','Berisi enzim dan pin yang menembus lapisan dinding sel.'],
+fiber:['Serabut ekor','Mengenali reseptor spesifik pada permukaan bakteri; menentukan inang.']}},
+ade:{n:'Adenovirus',f:'Adenoviridae · virus telanjang',g:'dsDNA ±36 kb',s:'70–90 nm',y:'Kapsid ikosahedral (20 sisi, 12 sudut)',x:'Faringitis, konjungtivitis, diare',cam:9,ty:0,
+d:'Virus tanpa sampul sehingga tahan terhadap sabun dan desinfektan ringan. Fiber di 12 sudutnya mengikat reseptor sel; vektor adenovirus dipakai pada beberapa vaksin.',
+p:{cap:['Kapsid ikosahedral','Tersusun dari 240 kapsomer heksan dan 12 penton; sangat stabil.'],
+fiber:['Fiber dan knob','Menonjol dari tiap sudut; knob mengikat reseptor sel inang (misalnya CAR).'],
+dna:['DNA genom','DNA linear untai ganda, direplikasi di nukleus sel inang.']}},
+hiv:{n:'HIV-1',f:'Retroviridae · virus bersampul',g:'2 × ssRNA(+) ±9,2 kb',s:'100–120 nm',y:'Sampul + kapsid kerucut',x:'AIDS (menyerang sel CD4⁺)',cam:9,ty:0,
+d:'Retrovirus yang menginfeksi limfosit T CD4⁺, makrofag, dan sel dendritik. Reverse transcriptase membuat DNA dari RNA, lalu integrase menyisipkannya ke genom inang.',
+p:{env:['Sampul lipid','Membran sel inang yang membawa glikoprotein virus.','Rapuh di luar tubuh, tetapi infeksi sel ke sel tetap berlangsung.'],
+spike:['gp120 / gp41','Trimer gp120 mengikat CD4, lalu ko-reseptor CCR5/CXCR4; gp41 memfusikan membran.','Target maraviroc (CCR5) dan enfuvirtide (fusi).'],
+mat:['Matriks (p17)','Lapisan protein di bawah sampul yang menjangkarkan membran.'],
+cap:['Kapsid kerucut (p24)','Cangkang protein berbentuk kerucut yang melindungi RNA dan enzim.','Antigen p24 dipakai pada tes skrining generasi 4.'],
+rna:['Dua untai RNA genom','Dua salinan RNA(+) terikat protein nukleokapsid.'],
+rt:['Reverse transcriptase dan integrase','Enzim yang dibawa virion; membuat DNA dari RNA lalu menyisipkannya ke kromosom inang.','Target NRTI/NNRTI (RT) dan dolutegravir (integrase).']}},
+tmv:{n:'Tobacco mosaic virus',f:'Virgaviridae · virus heliks',g:'ssRNA(+) ±6,4 kb',s:'300 × 18 nm',y:'Batang heliks',x:'Penyakit mosaik tanaman',cam:13,ty:0,
+d:'Virus pertama yang diidentifikasi dan dikristalkan (Stanley, 1935). 2.130 subunit protein membentuk heliks mengelilingi satu untai RNA.',
+p:{cap:['Selubung protein','Subunit protein identik tersusun heliks; melindungi RNA.'],
+rna:['Genom RNA','Terselip di alur heliks protein, ikut terurai saat masuk ke sel.']}}};
+
+/* ---------- Three.js ---------- */
+const stage=$('#stage'),scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(42,1,.1,200);
+const R=new THREE.WebGLRenderer({antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));stage.prepend(R.domElement);
+scene.add(new THREE.HemisphereLight(0xbfe6ff,0x1a1030,.9));
+const kl=new THREE.DirectionalLight(0xffffff,1.2);kl.position.set(5,8,6);scene.add(kl);
+const rl=new THREE.PointLight(0xff5d7a,1.3,60);rl.position.set(-8,-4,-6);scene.add(rl);
+const ctl=new THREE.OrbitControls(cam,R.domElement);ctl.enableDamping=true;ctl.minDistance=4;ctl.maxDistance=30;
+const dust=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(Float32Array.from({length:900},()=>(Math.random()-.5)*40),3)),new THREE.PointsMaterial({color:0x5cc8ff,size:.07,transparent:true,opacity:.4}));scene.add(dust);
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(w&&h){R.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()}}
+new ResizeObserver(resize).observe(stage);
+
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.45},o));
+const Y=new THREE.Vector3(0,1,0),D=new THREE.Object3D();
+const mesh=(geo,mat,part)=>{const m=new THREE.Mesh(geo,mat);m.userData.part=part;return m};
+function inst(geo,mat,pts,part,fn){const m=new THREE.InstancedMesh(geo,mat,pts.length);pts.forEach((p,i)=>{D.position.set(0,0,0);D.rotation.set(0,0,0);D.quaternion.identity();D.scale.set(1,1,1);fn(D,p,i);D.updateMatrix();m.setMatrixAt(i,D.matrix)});m.userData.part=part;return m}
+const fib=n=>Array.from({length:n},(_,i)=>{const y=1-2*(i+.5)/n,r=Math.sqrt(1-y*y),t=i*2.39996;return new THREE.Vector3(Math.cos(t)*r,y,Math.sin(t)*r)});
+const tube=(f,n,r,mat,part)=>mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(Array.from({length:n},(_,i)=>f(i/(n-1)))),n*2,r,6),mat,part);
+const shellMat=(c,o)=>{const m=new THREE.MeshPhysicalMaterial({color:c,transparent:true,opacity:.45,roughness:.3,clearcoat:1,side:THREE.DoubleSide});m.userData.shell=true;return m};
+
+const B={
+cov(){const g=new THREE.Group(),sh=shellMat(0x3a6fa0),rn=M(0xff5d7a,{emissive:0x551020}),sp=M(0xff7a59,{roughness:.3});
+g.add(mesh(new THREE.SphereGeometry(2.4,48,32),sh,'env'));
+const pts=fib(64);
+g.add(inst(new THREE.CylinderGeometry(.04,.07,.8,8).translate(0,.4,0),sp,pts,'spike',(d,n)=>{d.position.copy(n).multiplyScalar(2.4);d.quaternion.setFromUnitVectors(Y,n)}));
+g.add(inst(new THREE.ConeGeometry(.26,.45,3).rotateX(Math.PI).translate(0,1.05,0),sp,pts,'spike',(d,n)=>{d.position.copy(n).multiplyScalar(2.4);d.quaternion.setFromUnitVectors(Y,n)}));
+g.add(inst(new THREE.BoxGeometry(.16,.12,.16),M(0xffb454),fib(170),'m',(d,n)=>{d.position.copy(n).multiplyScalar(2.4);d.quaternion.setFromUnitVectors(Y,n)}));
+const f=t=>{t*=6.283;return new THREE.Vector3(1.5*Math.sin(5*t+1),1.4*Math.sin(7*t),1.5*Math.cos(3*t+2))};
+g.add(tube(f,260,.07,rn,'rna'));
+g.add(inst(new THREE.SphereGeometry(.17,10,8),M(0xffd479),Array.from({length:70},(_,i)=>f(i/69)),'n',(d,p)=>d.position.copy(p)));
+return{g,sh:[sh]}},
+phg(){const g=new THREE.Group(),sh=shellMat(0x2f8fd0),mt=M(0xb4d4ff,{metalness:.7,roughness:.3});
+const hg=new THREE.IcosahedronGeometry(1.5,1);hg.scale(1,1.3,1);const h=mesh(hg,sh,'head');h.position.y=3.4;g.add(h);
+const dna=tube(t=>{const a=t*30*Math.PI,r=1.05*Math.sqrt(Math.sin(Math.PI*t));return new THREE.Vector3(r*Math.cos(a),3.4+(t-.5)*2.8,r*Math.sin(a)*.9)},320,.06,M(0xff5d7a,{emissive:0x551020}),'dna');g.add(dna);
+const nk=mesh(new THREE.CylinderGeometry(.5,.5,.4,16),mt,'sheath');nk.position.y=1.8;g.add(nk);
+g.add(inst(new THREE.TorusGeometry(.38,.1,8,20).rotateX(Math.PI/2),mt,Array.from({length:14},(_,i)=>1.55-i*.2),'sheath',(d,y)=>d.position.y=y));
+const bs=mesh(new THREE.CylinderGeometry(1.1,1.1,.22,6),M(0x7aa8e0),'base');bs.position.y=-1.3;g.add(bs);
+const fm=M(0xcfe3ff,{roughness:.3}),cg=new THREE.CylinderGeometry(.045,.045,1.8,6).translate(0,.9,0),A=[...Array(6).keys()].map(i=>i*Math.PI/3);
+const seg=(dirf,startf)=>inst(cg,fm,A,'fiber',(d,a)=>{const v=dirf(a);d.position.copy(startf(a));d.quaternion.setFromUnitVectors(Y,v.normalize())});
+g.add(seg(a=>new THREE.Vector3(Math.cos(a)*.6,-1,Math.sin(a)*.6),a=>new THREE.Vector3(Math.cos(a)*1,-1.4,Math.sin(a)*1)));
+g.add(seg(a=>new THREE.Vector3(Math.cos(a)*1.3,-.5,Math.sin(a)*1.3),a=>new THREE.Vector3(Math.cos(a)*1+Math.cos(a)*.6*1.8/1.17,-1.4-1.54,Math.sin(a)*1+Math.sin(a)*.6*1.8/1.17)));
+return{g,sh:[sh]}},
+ade(){const g=new THREE.Group(),sh=shellMat(0x3b6fd0),ig=new THREE.IcosahedronGeometry(2.2,0),p=ig.attributes.position,seen={},vs=[],fc=[];
+const c=new THREE.Mesh(ig,sh);c.userData.part='cap';g.add(c);
+g.add(new THREE.LineSegments(new THREE.EdgesGeometry(ig),new THREE.LineBasicMaterial({color:0x9fe0ff})));
+for(let i=0;i<p.count;i++){const v=new THREE.Vector3().fromBufferAttribute(p,i),k=v.toArray().map(x=>x.toFixed(2)).join();if(!seen[k]){seen[k]=1;vs.push(v.normalize())}if(i%3==2){fc.push(new THREE.Vector3().fromBufferAttribute(p,i).add(new THREE.Vector3().fromBufferAttribute(p,i-1)).add(new THREE.Vector3().fromBufferAttribute(p,i-2)).normalize())}}
+g.add(inst(new THREE.SphereGeometry(.42,14,10),M(0x6fb4ff),fc,'cap',(d,n)=>d.position.copy(n).multiplyScalar(1.75)));
+const fm=M(0xffb454);
+g.add(inst(new THREE.CylinderGeometry(.04,.04,1.3,6).translate(0,.65,0),fm,vs,'fiber',(d,n)=>{d.position.copy(n).multiplyScalar(2.2);d.quaternion.setFromUnitVectors(Y,n)}));
+g.add(inst(new THREE.SphereGeometry(.17,10,8).translate(0,1.4,0),fm,vs,'fiber',(d,n)=>{d.position.copy(n).multiplyScalar(2.2);d.quaternion.setFromUnitVectors(Y,n)}));
+g.add(tube(t=>{const a=t*26*Math.PI,r=1.25*Math.pow(Math.sin(Math.PI*t),.6);return new THREE.Vector3(r*Math.cos(a),(t-.5)*2.6,r*Math.sin(a))},320,.06,M(0xff5d7a,{emissive:0x551020}),'dna'));
+return{g,sh:[sh]}},
+hiv(){const g=new THREE.Group(),sh=shellMat(0x4a6a9a),sp=M(0xff7a59),pts=fib(18),ci=new THREE.Group(),rn=M(0xff5d7a,{emissive:0x551020});
+g.add(mesh(new THREE.SphereGeometry(2.4,48,32),sh,'env'));
+const f=(d,n)=>{d.position.copy(n).multiplyScalar(2.4);d.quaternion.setFromUnitVectors(Y,n)};
+g.add(inst(new THREE.CylinderGeometry(.05,.08,.6,8).translate(0,.3,0),sp,pts,'spike',f));
+g.add(inst(new THREE.SphereGeometry(.28,12,10).translate(0,.8,0),sp,pts,'spike',f));
+g.add(mesh(new THREE.IcosahedronGeometry(2.1,2),M(0xffb454,{wireframe:true}),'mat'));
+ci.rotation.z=.6;g.add(ci);
+ci.add(mesh(new THREE.CylinderGeometry(.25,.95,2.3,6),M(0x6fb4ff,{transparent:true,opacity:.6,flatShading:true}),'cap'));
+[0,1].forEach(i=>ci.add(tube(u=>{const q=u*18+i*3,w=.5-.35*u;return new THREE.Vector3(w*Math.sin(q),-1+u*1.9,w*Math.cos(q))},200,.06,rn,'rna')));
+ci.add(inst(new THREE.SphereGeometry(.13,10,8),M(0x6fcf97),[...Array(12).keys()],'rt',(d,i)=>d.position.set(Math.sin(i*12.9)*.3,Math.sin(i*7.3)*.8,Math.cos(i*5.1)*.3)));
+return{g,sh:[sh]}},
+tmv(){const g=new THREE.Group(),sh=M(0xffcc4d,{transparent:true,opacity:.45});sh.userData.shell=true;
+g.add(inst(new THREE.BoxGeometry(.5,.22,.36),sh,Array.from({length:380},(_,i)=>i),'cap',(d,i)=>{const a=i*.45;d.position.set(Math.cos(a)*.8,-3.7+i*.0195*1,Math.sin(a)*.8);d.rotation.y=-a;d.position.y=-3.7+i*7.4/380}));
+g.add(tube(t=>{const a=t*26*2*Math.PI;return new THREE.Vector3(Math.cos(a)*.42,-3.7+t*7.4,Math.sin(a)*.42)},400,.07,M(0xff5d7a,{emissive:0x551020}),'rna'));
+g.rotation.z=Math.PI/2.8;return{g,sh:[sh]}}};
+
+let cur=null,op=.45,sel=null;const cache={};
+function show(k){if(cur)scene.remove(cur.g);const v=V[k];cur=cache[k]||(cache[k]=B[k]());cur.k=k;scene.add(cur.g);
+cam.position.set(v.cam*.55,v.cam*.35,v.cam);ctl.target.set(0,v.ty,0);setOp();
+$$('#chips .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.k===k));
+$('#vn').textContent=v.n;$('#vf').textContent=v.f;$('#vd').textContent=v.d;
+$('#facts').innerHTML=[['Genom',v.g],['Ukuran',v.s],['Struktur',v.y],['Klinis',v.x]].map(a=>`<dt>${a[0]}</dt><dd>${a[1]}</dd>`).join('');
+$('#parts').innerHTML=Object.entries(v.p).map(([p,a])=>`<button class="chip" data-p="${p}" aria-pressed="false">${a[0]}</button>`).join('');
+$$('#parts .chip').forEach(b=>b.onclick=()=>pick(b.dataset.p));
+$('#pinfo').innerHTML='<b>Pilih komponen</b><br>Klik bagian pada model atau tombol di atas.';pick(null,true)}
+function setOp(){cur.sh.forEach(m=>{m.opacity=op;m.depthWrite=op>.9})}
+function pick(p,silent,px,py){if(!p)$('#pop').hidden=true;sel=p;cur.g.traverse(o=>{if(o.material&&o.material.emissive&&!o.material.userData.shell&&o.userData.part){const base=o.material.userData.e??(o.material.userData.e=o.material.emissive.getHex());o.material.emissive.setHex(o.userData.part===p?0x3a6a99:base)}});
+$$('#parts .chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===p));
+if(p&&!silent){const a=V[cur.k].p[p];$('#pinfo').innerHTML=`<b>${a[0]}</b><br>${a[1]}`;popup(a,px,py)}}
+function popup(a,x,y){const b=stage.getBoundingClientRect(),pp=$('#pop'),w=Math.min(300,b.width-20);$('#pt').textContent=a[0];$('#pv').textContent=V[cur.k].n;$('#pd').textContent=a[1];$('#pc').innerHTML=a[2]?'<b>Relevansi klinis:</b> '+a[2]:'';pp.hidden=false;
+const l=x==null?b.width-w-12:Math.min(Math.max(10,x-b.left+18),b.width-w-10),t=x==null?12:Math.min(Math.max(10,y-b.top-30),Math.max(10,b.height-pp.offsetHeight-34));pp.style.left=l+'px';pp.style.top=t+'px'}
+$('#px').onclick=()=>pick(null);document.addEventListener('keydown',e=>{if(e.key==='Escape')pick(null)});
+Object.keys(V).forEach(k=>{const b=document.createElement('button');b.className='chip';b.dataset.k=k;b.textContent=V[k].n;b.onclick=()=>show(k);$('#chips').append(b)});
+$('#op').oninput=e=>{op=+e.target.value;setOp()};
+$('#rot').checked=!reduce;
+const ray=new THREE.Raycaster();let dn=[0,0];
+R.domElement.onpointerdown=e=>dn=[e.clientX,e.clientY];
+R.domElement.onpointerup=e=>{if(Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>5)return;const b=R.domElement.getBoundingClientRect();
+ray.setFromCamera({x:(e.clientX-b.left)/b.width*2-1,y:-(e.clientY-b.top)/b.height*2+1},cam);
+const hs=ray.intersectObject(cur.g,true).filter(h=>h.object.userData.part);const t=op<.8?(hs.find(h=>!h.object.material.userData.shell)||hs[0]):hs[0];
+if(t)pick(t.object.userData.part,false,e.clientX,e.clientY);else pick(null)};
+
+/* ---------- Siklus infeksi ---------- */
+const C={
+hewan:{n:'Virus RNA bersampul',t:['Adsorpsi','Penetrasi','Pelepasan genom','Replikasi','Perakitan','Pelepasan'],
+s:['Spike mengikat reseptor ACE2 pada permukaan sel epitel napas.','Protease sel (TMPRSS2) mengaktifkan spike; membran virus berfusi atau virus masuk melalui endositosis.','Nukleokapsid terurai dan RNA(+) dilepas ke sitoplasma.','Ribosom menerjemahkan RNA menjadi poliprotein; RdRp virus menyalin genom berkali-kali.','Protein struktural dan RNA berkumpul di ERGIC/Golgi dan membentuk virion baru.','Virion keluar lewat eksositosis (budding); sel dapat bertahan atau mati.'],
+note:'Penghambat yang dikenal: antibodi penetral (adsorpsi), inhibitor protease dan RdRp (replikasi).'},
+litik:{n:'Bakteriofag litik',t:['Adsorpsi','Penetrasi','Pengambilalihan','Sintesis','Perakitan','Lisis'],
+s:['Serabut ekor mengenali reseptor spesifik pada dinding bakteri.','Selubung ekor berkontraksi dan menyuntikkan DNA ke sitoplasma.','DNA fag mematikan DNA inang dan mengarahkan sel membuat komponen fag.','DNA fag direplikasi; protein kepala dan ekor disintesis.','Kepala diisi DNA lalu ekor dipasang menjadi fag utuh.','Lisozim fag memecah dinding sel; fag baru dilepas dan bakteri mati.'],
+note:'Daur litik bersifat cepat; inilah dasar terapi fag untuk infeksi bakteri.'},
+lisogenik:{n:'Bakteriofag lisogenik',t:['Adsorpsi','Penetrasi','Integrasi','Profag','Induksi','Lisis'],
+s:['Fag menempel pada reseptor bakteri.','DNA fag masuk ke sel inang.','DNA fag menyisip ke kromosom bakteri.','Sebagai profag, DNA ikut direplikasi dan diwariskan pada tiap pembelahan sel.','Stres (misalnya sinar UV) memicu profag lepas dari kromosom.','Daur beralih menjadi litik: fag dirakit dan sel pecah.'],
+note:'Profag dapat membawa gen toksin; contohnya toksin difteri dan kolera.'}};
+let cyc='hewan',tg=0,p=0,auto=false,lastT=0;
+Object.keys(C).forEach(k=>{const b=document.createElement('button');b.className='chip';b.dataset.k=k;b.textContent=C[k].n;b.onclick=()=>{cyc=k;tg=0;p=0;setCyc()};$('#cchips').append(b)});
+function setCyc(){sT=0;const c=C[cyc];$$('#cchips .chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===cyc));
+$('#steps').innerHTML=c.t.map((t,i)=>`<button class="chip" data-i="${i}" aria-pressed="${i===tg}">${i+1}. ${t}</button>`).join('');
+$$('#steps .chip').forEach(b=>b.onclick=()=>{tg=+b.dataset.i;setCyc()});
+$('#sinfo').innerHTML=`<b>${c.t[tg]}</b><br>${c.s[tg]}`;$('#cnote').textContent=c.note}
+$('#prev').onclick=()=>{tg=Math.max(0,tg-1);setCyc()};$('#next').onclick=()=>{tg=Math.min(5,tg+1);setCyc()};
+$('#play').onclick=e=>{auto=!auto;e.target.setAttribute('aria-pressed',auto)};
+const cv=$('#cv'),cx=cv.getContext('2d'),h=i=>Math.abs(Math.sin(i*127.1)*43758.5453)%1,cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),mix=(a,b,k)=>a+(b-a)*cl(k),sm=k=>{k=cl(k);return k*k*(3-2*k)},DUR=6;let sT=0,spd=1;
+const circ=(x,y,r,f,s,w)=>{cx.beginPath();cx.arc(x,y,Math.max(.1,r),0,7);if(f){cx.fillStyle=f;cx.fill()}if(s){cx.strokeStyle=s;cx.lineWidth=w||2;cx.stroke()}},
+seg=(a,b,c,d,col,w)=>{cx.beginPath();cx.moveTo(a,b);cx.lineTo(c,d);cx.strokeStyle=col;cx.lineWidth=w||2;cx.stroke()},
+rna=(x,y,len,ang,t,amp)=>{if(len<2)return;cx.beginPath();cx.strokeStyle='#ff5d7a';cx.lineWidth=2.5;const c=Math.cos(ang),s=Math.sin(ang);for(let i=0;i<=len;i+=2){const o=Math.sin(i*.4-t*5)*amp;cx.lineTo(x+c*i-s*o,y+s*i+c*o)}cx.stroke()},
+tx=(s,x,y,col)=>{cx.fillStyle=col||'#8da0bd';cx.font='13px Figtree,sans-serif';cx.fillText(s,x,y)};
+function vir(x,y,r,a,al,spk){cx.globalAlpha=al;if(spk!==0)for(let i=0;i<14;i++){const q=a+i/14*6.283,c=Math.cos(q),s=Math.sin(q);seg(x+c*r,y+s*r,x+c*(r+7),y+s*(r+7),'#ff7a59',2);circ(x+c*(r+8),y+s*(r+8),2.5,'#ff7a59')}circ(x,y,r,'#2d5f8a','#5cc8ff',2);circ(x,y,r*.55,null,'#ff5d7a',2);circ(x+r*.2,y-r*.1,r*.18,'#ffd479');cx.globalAlpha=1}
+function ph(x,y,k,ext,dna,fib,al){cx.globalAlpha=al;const hs=20*k,L=70*k*ext,t0=y+hs*1.1,t1=t0+L;cx.beginPath();for(let i=0;i<6;i++){const q=i/6*6.283+.52;cx.lineTo(x+Math.cos(q)*hs,y+Math.sin(q)*hs*1.2)}cx.closePath();cx.fillStyle='#2d5f8a';cx.fill();cx.strokeStyle='#5cc8ff';cx.lineWidth=2;cx.stroke();if(dna>.02)circ(x,y,hs*.6*Math.sqrt(dna),null,'#ff5d7a',2.5);seg(x,t0,x,t1,'#b4d4ff',6*k);for(let i=1;i<L/(7*k);i++)seg(x-4*k,t0+i*7*k,x+4*k,t0+i*7*k,'#7aa8e0',1.5);seg(x-9*k,t1,x+9*k,t1,'#b4d4ff',3);for(const d of[-1,1])seg(x+d*7*k,t1,x+d*(7+fib*22)*k,t1+(28-fib*14)*k,'#cfe3ff',1.8);cx.globalAlpha=1}
+const LB={hewan:['Spike mengikat reseptor ACE2','Endositosis: virus terbungkus vesikel','Uncoating: RNA(+) dilepas ke sitoplasma','Ribosom di RE kasar menerjemahkan RNA','Perakitan di ERGIC/Golgi','Eksositosis virion baru'],litik:['Serabut ekor mengenali reseptor','Selubung berkontraksi, DNA disuntikkan','Kromosom inang dipotong nuklease fag','Replikasi DNA fag dan sintesis protein','Kepala diisi DNA, ekor dipasang','Lisis dinding sel, fag baru keluar'],lisogenik:['Serabut ekor mengenali reseptor','DNA fag disuntikkan','Integrase menyisipkan DNA ke kromosom','Profag ikut diwariskan ke sel anak','UV memicu profag lepas (induksi)','Lisis: fag baru dilepas']};
+function drawCycle(t){const dp=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+if(cv.width!==Math.round(W*dp)){cv.width=Math.round(W*dp);cv.height=Math.round(H*dp)}
+cx.setTransform(dp,0,0,dp,0,0);cx.clearRect(0,0,W,H);
+const s=tg,u=sm(sT/DUR),f=n=>s>n?1:s===n?u:0,lys=cyc==='lisogenik',X=W/2,Yc=H/2+8,r=Math.min(W*.26,H*.34),R=r*1.35;
+(cyc==='hewan'?animal:bact)();
+tx(LB[cyc][s],16,H-16,'#5cc8ff');
+function animal(){const dent=s===1?r*.34*sm(u/.7)*(1-sm((u-.8)/.2)):0,P=[],gx=X+1.2*r;
+for(let i=0;i<72;i++){const a=i/72*6.283,d=Math.abs(Math.atan2(Math.sin(a-3.1416),Math.cos(a-3.1416))),k=1+.015*Math.sin(3*a+t*1.3)+.01*Math.sin(5*a-t);P.push([X+Math.cos(a)*R*k+dent*Math.exp(-d*d/.05),Yc+Math.sin(a)*r*k])}
+cx.beginPath();P.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]));cx.closePath();cx.fillStyle='rgba(201,160,220,.08)';cx.fill();cx.strokeStyle='#c9a0dc';cx.lineWidth=9;cx.stroke();cx.strokeStyle='#13263f';cx.lineWidth=4;cx.stroke();
+circ(X+.25*r,Yc,.36*r,'#1b3050','#5cc8ff',2);circ(X+.25*r,Yc,.5*r,null,'#4a7a5a',5);
+for(let i=0;i<30;i++){const q=i/30*6.283;circ(X+.25*r+Math.cos(q)*.5*r,Yc+Math.sin(q)*.5*r,2.2,'#e8eef7')}
+for(let i=0;i<3;i++){cx.beginPath();cx.arc(gx,Yc,r*(.2+i*.07),Math.PI*.6,Math.PI*1.4);cx.strokeStyle='#6fcf97';cx.lineWidth=5;cx.stroke()}
+tx('Sel inang',X-R,Yc-r-14);tx('Nukleus',X+.25*r-22,Yc+4);tx('Golgi',gx-14,Yc+r*.45);
+for(let i=30;i<=42;i+=2){const p=P[i],on=(s===0&&u>.75)||(s===1&&u<.6),c=on?'#ff5d7a':'#8f7fb0',y2=p[1]-(i-36)*1.2;seg(p[0],p[1],p[0]-13,y2,c,2);circ(p[0]-13,y2,3,c)}
+const vx0=P[36][0]-36,inX=X-R+r*.6;
+if(s===0){const e=sm(u*1.15);vir(mix(X-R-W*.2,vx0,e),mix(Yc-r*.9,Yc,e)+Math.sin(t*3+e*6)*10*(1-e),16,t*.6,1)}
+if(s===1){const e=sm((u-.55)/.45),x=mix(vx0,inX,e);vir(x,Yc,16,t*.6,1);if(u>.35)circ(x,Yc,31,null,'#c9a0dc',2.5)}
+if(s===2){cx.globalAlpha=1-u;circ(inX,Yc,31,null,'#c9a0dc',2.5);cx.globalAlpha=1;vir(inX,Yc,16,t*.6,1-sm(u*1.4));rna(inX+8,Yc,u*r*.8,-.4,t,4)}
+if(s>=3){const n=s===3?1+Math.floor(u*6):7;for(let i=0;i<n;i++)rna(X-R+r*.35+h(i)*r*.7,Yc-r*.55+h(i+9)*r*1.1,22,h(i+3)*6,t+i,3)}
+if(s===3)for(let k=0;k<8;k++){const q=k/8*6.283+.4,m=Math.floor(u*5);for(let j=0;j<=m;j++)circ(X+.25*r+Math.cos(q)*(.5*r+5+j*6),Yc+Math.sin(q)*(.5*r+5+j*6),2.6,'#ffb454')}
+if(s===4){for(let i=0;i<10;i++){const e=(u*1.5+h(i))%1;circ(mix(X-r*.4,gx-14,e)+Math.sin(e*9+i)*5,mix(Yc-r*.4+h(i)*r*.6,Yc+(h(i+4)-.5)*r*.3,e),3,i%2?'#ffd479':'#ff7a59')}for(let i=0;i<Math.floor(u*8);i++)vir(gx+(i%3)*14-4,Yc-.3*r+Math.floor(i/3)*20,6,t,1,0)}
+if(s===5)for(let i=0;i<8;i++){const e=sm((u-h(i)*.4)/.6);vir(mix(gx+(i%3)*14-4,X+R+40+(i%4)*26+Math.sin(t*2+i)*4,e),mix(Yc-.3*r+Math.floor(i/3)*20,Yc+(i-4)*r*.2+Math.cos(t*2+i)*4,e),mix(6,11,e),t,1,e>.8?1:0)}}
+function bact(){const cy=Yc+.3*r,rx=1.55*r,ry=.8*r,div=lys&&s===3?sm(u):0,k=.9,lx=X-.45*r,wallY=cy-ry*Math.sqrt(1-((lx-X)/rx)**2),hy=e=>wallY-(22*k+70*k*e),dx=lx+16,dy=wallY+r*.3;
+const cell=(x,w,al)=>{cx.globalAlpha=al;cx.beginPath();cx.ellipse(x,cy,w,ry,0,0,7);cx.fillStyle='rgba(111,207,151,.09)';cx.fill();cx.setLineDash(s===5?[mix(300,10,u*1.4),mix(0,16,u*1.4)]:[]);cx.strokeStyle='#6fcf97';cx.lineWidth=9;cx.stroke();cx.setLineDash([]);cx.strokeStyle='#a8e6c3';cx.lineWidth=2;cx.beginPath();cx.ellipse(x,cy,w-8,ry-8,0,0,7);cx.stroke();cx.globalAlpha=1};
+const chrom=(x,y)=>{cx.setLineDash(!lys&&s>=2?[mix(200,4,f(2)),mix(0,9,f(2))]:[]);circ(x,y,.3*r,null,'#5cc8ff',3);cx.setLineDash([]);if(lys&&s>=2&&s<=4){const L=s===2?mix(.2,1.2,u):s===3?1.2:mix(1.2,.2,u);cx.beginPath();cx.arc(x,y,.3*r,-1,-1+L);cx.strokeStyle='#ff5d7a';cx.lineWidth=7;cx.stroke();if(s===4)circ(x+.25*r,y-.28*r,mix(0,.16*r,u),null,'#ff5d7a',2.5)}};
+if(lys&&s===3){const o=mix(0,.78*r,div);cell(X-o,mix(rx,.78*r,div),1);cell(X+o,mix(rx,.78*r,div),1);chrom(X-o,cy);chrom(X+o,cy)}else{cell(X,rx,s===5?1-.4*u:1);if(s<5)chrom(X+.2*r,cy)}
+tx('Bakteri inang',X-rx,cy-ry-16);
+if(s===0){const e=sm(u*1.1);ph(mix(X-r*2.2,lx,e)+Math.sin(t*2)*6*(1-e),mix(hy(1)-r*.9,hy(1),e)+Math.sin(t*3)*5*(1-e),k,1,1,sm((u-.6)/.4),1)}
+if(s===1){const ex=mix(1,.55,sm(u/.5));ph(lx,hy(ex),k,ex,1-sm((u-.4)/.6),1,1);if(u>.35)seg(lx,wallY,lx,wallY+14,'#b4d4ff',3);if(u>.4&&u<.97)for(let i=0;i<10;i++){const e=(u*2.2+i/10)%1;circ(lx+Math.sin(e*12+i)*3,mix(hy(ex),dy,e),2.4,'#ff5d7a')}circ(dx,dy,mix(0,9,sm((u-.5)/.5)),null,'#ff5d7a',2.5)}
+if(s>=2&&s<=(lys?2:4))ph(lx,hy(.55),k,.55,0,1,.55);
+if(s===2){if(lys)circ(mix(dx,X+.2*r,u),mix(dy,cy-.3*r,u),mix(9,5,u),null,'#ff5d7a',2.5);else circ(dx,dy,9+Math.sin(t*4)*1.5,null,'#ff5d7a',2.5)}
+if(s===3&&!lys){const n=1+Math.floor(u*6);for(let i=0;i<n;i++){const x=X-1.1*r+h(i)*1.7*r,y=cy-.5*r+h(i+9)*.8*r;circ(x,y,6,null,'#ff5d7a',2);if(i<n-1){circ(x+14,y+10,4,'#2d5f8a','#5cc8ff',1.5);seg(x-12,y+12,x-12,y+24,'#b4d4ff',2)}}}
+if(s===4&&lys){for(let i=0;i<5;i++){const x0=X-r*1.4+i*r*.45,a=.6+.4*Math.sin(t*5+i);cx.globalAlpha=a;seg(x0,cy-ry-62,x0+14,cy-ry-24,'#ffd479',2);cx.globalAlpha=1}tx('Sinar UV',X-r*1.5,cy-ry-70,'#ffd479')}
+if((s===4&&!lys)||s===5){const n=s===4?Math.floor(u*10)+1:10;for(let i=0;i<n;i++){const bx=X-1.1*r+(i%5)*.55*r,by=cy-.55*r+Math.floor(i/5)*.5*r,e=s===5?sm((u-.4)/.6):0,m=1+e*2.2;ph(X+(bx-X)*m+Math.sin(t*3+i)*4*e,cy+(by-cy)*m,.32,1,s===4?sm(u*2-h(i)):1,1,1)}}}
+}
+$('#spd').oninput=e=>spd=+e.target.value;$('#rep').onclick=()=>{sT=0};
+
+
+/* ---------- Baltimore, klinis, sejarah ---------- */
+const BL=[['I','dsDNA','Adenovirus, herpes, HPV','DNA ditranskripsi langsung menjadi mRNA, umumnya di nukleus.'],
+['II','ssDNA','Parvovirus B19','DNA untai tunggal diubah menjadi untai ganda, lalu ditranskripsi.'],
+['III','dsRNA','Rotavirus','Genom bersegmen; mRNA dibuat oleh polimerase virus di dalam kapsid.'],
+['IV','ssRNA(+)','SARS-CoV-2, dengue, polio','RNA berfungsi sebagai mRNA dan langsung diterjemahkan.'],
+['V','ssRNA(−)','Influenza, rabies, campak, Ebola','RNA(−) harus disalin dahulu oleh RdRp yang dibawa virion.'],
+['VI','ssRNA-RT','HIV','Reverse transcriptase membuat DNA dari RNA, lalu menyisip ke genom inang.'],
+['VII','dsDNA-RT','Hepatitis B','Genom DNA direplikasi lewat perantara RNA.']];
+$('#balt').innerHTML=BL.map((b,i)=>`<button class="card" aria-expanded="false"><b>Kelas ${b[0]}: ${b[1]}</b><small>${b[2]}</small><p hidden>${b[3]}</p></button>`).join('');
+$$('#balt .card').forEach(c=>c.onclick=()=>{const o=c.getAttribute('aria-expanded')==='false';c.setAttribute('aria-expanded',o);c.querySelector('p').hidden=!o});
+const CL=[['Vaksin','Memicu imunitas sebelum paparan: virus dilemahkan, virus mati, subunit protein, atau mRNA/vektor.'],['Antivirus','Menyasar tahap spesifik: protease, polimerase, integrase, atau neuraminidase.'],['Higiene','Virus bersampul rusak oleh sabun; virus telanjang lebih tahan sehingga perlu desinfektan yang tepat.'],['Antibiotik tidak efektif','Virus tidak punya dinding sel atau metabolisme sendiri, sehingga antibiotik tidak bekerja.']];
+$('#clin').innerHTML=CL.map(c=>`<div class="card"><b>${c[0]}</b><p>${c[1]}</p></div>`).join('');
+$('#hist').innerHTML=[['1883–1892','Mayer dan Ivanovsky menunjukkan agen penyebab mosaik tembakau lolos saringan bakteri.'],['1897','Beijerinck menyebutnya contagium vivum fluidum.'],['1935','Stanley mengkristalkan TMV.'],['1952','Hershey dan Chase membuktikan DNA adalah materi genetik fag.']].map(h=>`<p><b>${h[0]}</b> — ${h[1]}</p>`).join('');
+
+/* ---------- Kuis ---------- */
+const Q=[['Mengapa sabun efektif melawan SARS-CoV-2?',['Merusak sampul lipid','Menghancurkan RNA langsung','Membunuh ribosom virus','Menetralkan spike dengan pH'],0,'Sampul virus adalah membran lipid; sabun melarutkannya sehingga virion tidak infeksius.'],
+['Protein SARS-CoV-2 yang mengikat reseptor ACE2 adalah …',['Nukleokapsid (N)','Spike (S)','Membran (M)','Selubung (E)'],1,'Domain RBD pada spike mengikat ACE2.'],
+['Pada daur lisogenik, DNA fag …',['Segera memecah sel','Disisipkan ke kromosom inang','Dihancurkan oleh bakteri','Berubah menjadi RNA'],1,'DNA tersisip sebagai profag dan diwariskan ke sel anak.'],
+['Virus HIV termasuk kelas Baltimore …',['I','IV','V','VI'],3,'HIV adalah virus ssRNA dengan reverse transcriptase (kelas VI).'],
+['Adenovirus memiliki bentuk kapsid …',['Heliks','Ikosahedral','Berbentuk peluru','Kompleks berekor'],1,'Kapsid ikosahedral dengan 20 sisi dan 12 sudut tempat fiber menonjol.'],
+['Siapa yang pertama mengkristalkan virus (TMV)?',['Ivanovsky','Beijerinck','Stanley','Mayer'],2,'Wendell Stanley mengkristalkan TMV pada 1935.']];
+Q.splice(3,0,['Enzim yang dibawa virion HIV dan mengubah RNA menjadi DNA adalah …',['RNA polimerase','Reverse transcriptase','Lisozim','Protease inang'],1,'Reverse transcriptase membuat DNA dari RNA; integrase lalu menyisipkannya ke kromosom inang.'],['Profag lepas dari kromosom dan memulai daur litik. Peristiwa ini disebut …',['Adsorpsi','Induksi','Lisis','Penetrasi'],1,'Stres seperti sinar UV memicu induksi profag.']);let qi=0,sc=0;
+function renderQ(){const b=$('#qbox');$('#bar i').style.width=(qi/Q.length*100)+'%';
+if(qi>=Q.length){b.innerHTML=`<h3>Skor Anda: ${sc} / ${Q.length}</h3><p>${sc>=5?'Pemahaman sangat baik.':sc>=3?'Cukup baik. Ulangi modul 3D dan siklus untuk memperkuat.':'Pelajari kembali model 3D dan siklus infeksi, lalu coba lagi.'}</p><button class="go" id="re">Ulangi kuis</button>`;$('#re').onclick=()=>{qi=0;sc=0;renderQ()};return}
+const q=Q[qi];b.innerHTML=`<p><b>Soal ${qi+1} dari ${Q.length}.</b> ${q[0]}</p>`+q[1].map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')+'<div id="fb"></div>';
+$$('.opt').forEach(o=>o.onclick=()=>{const i=+o.dataset.i;$$('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.i===q[2])x.classList.add('ok')});if(i===q[2])sc++;else o.classList.add('no');
+$('#fb').innerHTML=`<div class="box c">${i===q[2]?'Benar. ':'Belum tepat. '}${q[3]}</div><button class="go" id="nx">${qi===Q.length-1?'Lihat skor':'Soal berikutnya'}</button>`;$('#nx').onclick=()=>{qi++;renderQ()}})}
+
+/* ---------- Loop ---------- */
+const clk=new THREE.Clock();
+(function loop(){requestAnimationFrame(loop);const dt=clk.getDelta(),t=clk.elapsedTime;
+if(!$('#atlas').hidden&&cur){if($('#rot').checked)cur.g.rotation.y+=dt*.3;cur.g.position.y=Math.sin(t*1.2)*.08*!reduce;dust.rotation.y=t*.02;ctl.update();R.render(scene,cam)}
+if(!$('#cycle').hidden){sT+=dt*spd;if(auto&&sT>DUR+1.4){if(tg>=5)tg=0;else tg++;setCyc()}drawCycle(t)}})();
+show('cov');setCyc();renderQ();resize();
+</script>
+</body>
+</html>
